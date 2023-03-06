@@ -16,7 +16,6 @@ let minutes = now.getMinutes();
 minutes = minutes <= 9 ? "0" + minutes : minutes;
 
 function displayTemperature(response) {
-  console.log(response.data);
   let temperature = document.querySelector("#temperature");
   let city = document.querySelector("#city");
   let description = document.querySelector("#description");
@@ -25,16 +24,32 @@ function displayTemperature(response) {
   let date = document.querySelector("#date");
   let icon = document.querySelector("#icon");
 
-  temperature.innerHTML = Math.round(response.data.temperature.current);
-  city.innerHTML = response.data.city;
-  description.innerHTML = response.data.condition.description;
-  humidity.innerHTML = response.data.temperature.humidity;
+  temperature.innerHTML = Math.round(response.data.main.temp);
+  city.innerHTML = response.data.name;
+  description.innerHTML = response.data.weather[0].description;
+  humidity.innerHTML = response.data.main.humidity;
   wind.innerHTML = Math.round(response.data.wind.speed);
   date.innerHTML = `${day} ${hour}:${minutes}`;
-  icon.setAttribute("src", `https://openweathermap.org/img/wn/${response.data.condition.icon_url[0]}@2x.png`);
+  icon.setAttribute(
+    "src",
+    `http://openweathermap.org/img/wn/${response.data.weather[0].icon}.png`
+  );
 }
 
-let apiKey = "86bfa0b913987f39af8002aa2oe74a1t";
-let apiUrl = `https://api.shecodes.io/weather/v1/current?query=London&key=86bfa0b913987f39af8002aa2oe74a1t&units=metric`;
+function search(city){
+  let apiKey = "5f472b7acba333cd8a035ea85a0d4d4c";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(displayTemperature);
 
-axios.get(apiUrl).then(displayTemperature);
+}
+
+function handleSubmit(event){
+  event.preventDefault();
+  let cityInputElement = document.querySelector("#city-input");
+  search(cityInputElement.value);
+}
+
+let form = document.querySelector("#search-form");
+form.addEventListener("submit", handleSubmit);
+
+search("New York");
